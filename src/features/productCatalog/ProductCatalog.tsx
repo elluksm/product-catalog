@@ -8,10 +8,10 @@ import {
   incrementAsync,
   incrementIfOdd,
   selectCount,
-} from './counterSlice';
-import styles from './Counter.module.css';
+} from './productSlice';
+import styles from './ProductCatalog.module.css';
 
-export function Counter() {
+export function ProductCatalog() {
   const count = useAppSelector(selectCount);
   const dispatch = useAppDispatch();
   const [incrementAmount, setIncrementAmount] = useState('2');
