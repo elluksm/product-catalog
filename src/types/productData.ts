@@ -1,35 +1,36 @@
-export interface Product {
-  [id: number]: {
-    id: number;
-    name: string;
-  };
+export interface Products {
+  [id: number]: Product;
 }
 
-export interface RawProduct {
+export interface Product {
   id: number;
   name: string;
 }
 
+export interface Brands {
+  [id: number]: Brand;
+}
+
 export interface Brand {
-  [id: number]: {
-    id: number;
-    name: string;
-    products: Product;
-  };
+  id: number;
+  name: string;
+  products: Products;
 }
 
 export interface RawBrand {
   id: number;
   name: string;
-  products: RawProduct[];
+  products: Product[];
+}
+
+export interface Categories {
+  [id: string]: Category;
 }
 
 export interface Category {
-  [id: string]: {
-    id: string;
-    name: string;
-    brands: Brand;
-  };
+  id: string;
+  name: string;
+  brands: Brands;
 }
 
 export interface RawCategory {

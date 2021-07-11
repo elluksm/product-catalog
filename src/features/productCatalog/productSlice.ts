@@ -1,49 +1,60 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, current, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import {
-  Category,
+  Categories,
   RawCategory,
-  Brand,
+  Brands,
   RawBrand,
+  Products,
   Product,
-  RawProduct,
 } from "../../types/productData";
 import * as productData from "../../data/responseData.json";
+import { loadProductCatalog } from "../../app/localStorage";
 
-const initialState: { categories: Category } = {
+const initialState: { categories: Categories } = {
   categories: {},
 };
 
 export const getProducts = createAsyncThunk(
   "products/fetchProducts",
   async () => {
-    const response: RawCategory[] = productData.categories;
-    const data: Category = {};
+    const data: Categories = loadProductsFromFile();
+    const cachedData: any = loadProductCatalog();
 
-    // normalize data (quick solution)
-    // Todo: create even better data schema with use of some additional library
-    response.forEach((c: RawCategory) => {
-      const newBrands: Brand = {};
-      c.brands.forEach((b: RawBrand) => {
-        const newProducts: Product = {};
-        b.products.forEach((p: RawProduct) => {
-          newProducts[p.id] = p;
-        });
-
-        newBrands[b.id] = {
-          ...b,
-          products: newProducts,
-        };
-      });
-
-      data[c.id] = {
-        ...c,
-        brands: newBrands,
-      };
-    });
+    if (Object.keys(cachedData).length) {
+      return cachedData;
+    }
     return data;
   }
 );
+
+const loadProductsFromFile = (): Categories => {
+  const response: RawCategory[] = productData.categories;
+  const data: Categories = {};
+
+  // normalize data (quick solution)
+  // Todo: create even better data schema with use of some additional library
+  response.forEach((c: RawCategory) => {
+    const newBrands: Brands = {};
+    c.brands.forEach((b: RawBrand) => {
+      const newProducts: Products = {};
+      b.products.forEach((p: Product) => {
+        newProducts[p.id] = p;
+      });
+
+      newBrands[b.id] = {
+        ...b,
+        products: newProducts,
+      };
+    });
+
+    data[c.id] = {
+      ...c,
+      brands: newBrands,
+    };
+  });
+  return data;
+};
 
 export const productsSlice = createSlice({
   name: "products",
@@ -103,8 +114,9 @@ export const productsSlice = createSlice({
       state,
       action: PayloadAction<{ categoryId: string; brandId: number }>
     ) => {
-      const { [action.payload.brandId]: remove, ...rest } = state.categories[action.payload.categoryId].brands;
-      const newBrands: Brand = rest;
+      const data = current(state.categories[action.payload.categoryId].brands);
+      const { [action.payload.brandId]: remove, ...rest } = data;
+      const newBrands: Brands = rest;
       state.categories[action.payload.categoryId].brands = newBrands;
     },
 
@@ -119,13 +131,14 @@ export const productsSlice = createSlice({
       const productId = action.payload.productId;
       const brandId = action.payload.brandId;
       const categoryId = action.payload.categoryId;
-
-      const { [productId]: remove, ...rest } = state.categories[categoryId].brands[brandId].products;
-      const newProducts: Product = rest;
+      const data = current(state.categories[categoryId].brands[brandId].products);
+      
+      const { [productId]: remove, ...rest } = data;
+      const newProducts: Products = rest;
       state.categories[categoryId].brands[brandId].products = newProducts;
     },
   },
-  
+
   extraReducers: (builder) => {
     builder.addCase(getProducts.fulfilled, (state, action) => {
       state.categories = action.payload;
