@@ -1,10 +1,7 @@
 import React, { useEffect } from "react";
 
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import {
-  getProducts,
-  selectProducts,
-} from "./productSlice";
+import { getProducts, selectProducts } from "./productSlice";
 import "./ProductCatalog.css";
 
 import { ProductList } from "./productList/ProductList";
