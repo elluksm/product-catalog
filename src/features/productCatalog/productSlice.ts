@@ -21,7 +21,7 @@ export const getProducts = createAsyncThunk(
     const data: Categories = loadProductsFromFile();
     const cachedData: any = loadProductCatalog();
 
-    if (Object.keys(cachedData).length) {
+    if (cachedData && Object.keys(cachedData).length) {
       return cachedData;
     }
     return data;
@@ -97,9 +97,7 @@ export const productsSlice = createSlice({
       }>
     ) => {
       const randomId: number = Math.floor(Math.random() * 100000) + 1;
-      state.categories[action.payload.categoryId].brands[
-        action.payload.brandId
-      ].products[randomId] = {
+      state.categories[action.payload.categoryId].brands[action.payload.brandId].products[randomId] = {
         id: randomId,
         name: action.payload.productName,
       };
@@ -110,10 +108,7 @@ export const productsSlice = createSlice({
       state.categories = rest;
     },
 
-    deleteBrand: (
-      state,
-      action: PayloadAction<{ categoryId: string; brandId: number }>
-    ) => {
+    deleteBrand: (state, action: PayloadAction<{ categoryId: string; brandId: number }>) => {
       const data = current(state.categories[action.payload.categoryId].brands);
       const { [action.payload.brandId]: remove, ...rest } = data;
       const newBrands: Brands = rest;

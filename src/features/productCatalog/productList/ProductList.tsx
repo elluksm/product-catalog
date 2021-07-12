@@ -1,13 +1,10 @@
 import React from "react";
 
-import { useAppDispatch } from "../../../app/hooks";
-import { deleteCategory, deleteBrand, deleteProduct } from "../productSlice";
-import { Categories, Brands, Products } from "../../../types/productData";
+import { useAppSelector, useAppDispatch } from "../../../app/hooks";
+import { deleteCategory, deleteBrand, deleteProduct, selectProducts } from "../productSlice";
+import { Brands, Products } from "../../../types/productData";
 import "./ProductList.css";
 
-export interface ProductListProps {
-  productsByCategory: Categories;
-}
 
 export interface BrandProps {
   brands: Brands;
@@ -20,9 +17,9 @@ export interface ProductProps {
   brandId: number;
 }
 
-export function ProductList(props: ProductListProps) {
+export function ProductList() {
   const dispatch = useAppDispatch();
-  const categories: Categories = props.productsByCategory;
+  const categories = useAppSelector(selectProducts);
 
   return (
     <div className="category">
@@ -58,10 +55,7 @@ function BrandsList(props: BrandProps) {
             <button
               onClick={() =>
                 dispatch(
-                  deleteBrand({
-                    categoryId: props.categoryId,
-                    brandId: brands[key].id,
-                  })
+                  deleteBrand({categoryId: props.categoryId, brandId: brands[key].id,})
                 )
               }
             >

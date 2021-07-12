@@ -37,21 +37,25 @@ function AddCategoryForm() {
   const dispatch = useAppDispatch();
   const [categoryName, setcategoryName] = useState("");
 
+  function handleSubmit(event: any) {
+    event.preventDefault();
+    if (categoryName) {
+      dispatch(addCategory(categoryName));
+    }
+  }
+
   return (
-    <div className="form">
+    <form className="form" onSubmit={handleSubmit}>
       <input
         className="input"
         aria-label="Set category name"
         value={categoryName}
         onChange={(e) => setcategoryName(e.target.value)}
       />
-      <button
-        className="button"
-        onClick={() => dispatch(addCategory(categoryName))}
-      >
+      <button className="button" type="submit">
         Add Category
       </button>
-    </div>
+    </form>
   );
 }
 

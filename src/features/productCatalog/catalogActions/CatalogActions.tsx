@@ -4,9 +4,7 @@ import "./CatalogActions.css";
 import { InputForm, InputMode } from "./inputForm/InputForm";
 
 export function CatalogActions() {
-  const [inputMode, changeInputMode] = useState<InputMode | undefined>(
-    undefined
-  );
+  const [inputMode, changeInputMode] = useState<InputMode | undefined>(undefined);
 
   return (
     <div className="actions">
